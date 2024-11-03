@@ -11,11 +11,13 @@ import {
   useGLTF,
   useTexture,
 } from "@react-three/drei";
+import { useControls } from "leva";
 import { useSnapshot } from "valtio";
 import { easing } from "maath";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
 import { RegularKangaroo } from "./models/RegularKangaroo";
+import { Polo } from "./models/Polo";
 
 const cameraConfig = {
   position: [0, 0, 3.8],
@@ -24,6 +26,18 @@ const cameraConfig = {
 
 export default function ThreeScene() {
   const snapshot = useSnapshot(state);
+
+  const { "Apparel Type": apparel } = useControls({
+    "Apparel Type": {
+      options: {
+        "Classic Hoodie": "hoodie",
+        "Classic Polo Sweatshirt": "polo",
+      },
+    },
+
+    // colour: { value: "blue" },
+  });
+  console.log(apparel);
   // const texture = useGetTexture(snapshot);
 
   return (
@@ -36,16 +50,16 @@ export default function ThreeScene() {
           penumbra={0.25}
           shadow-mapSize={2048}
           castShadow
-          intensity={5}
+          intensity={3.5}
         />
 
         {/* <CameraRig> */}
-        <OrbitControls />
+        <OrbitControls minPolarAngle={1.25} maxPolarAngle={1.25} />
 
         {/* <Backdrop /> */}
         <Center>
-          <Hoodie />
-          {/* <RegularKangaroo /> */}
+          {apparel === "hoodie" && <Hoodie />}
+          {apparel === "polo" && <Polo />}
         </Center>
         {/* </CameraRig> */}
 

@@ -3,20 +3,22 @@ import { useControls } from "leva";
 import { DoubleSide, MeshPhysicalMaterial } from "three";
 import { useGetTexture } from "../../utils";
 
-const defaultParts = ["hood", "left-sleeve", "right-sleeve", "left-cuff", "right-cuff"];
+const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff", "right-cuff"];
+
+const modelPath = "/assets/models/hoodie-full-clean-test.glb";
 
 export function Hoodie(props) {
-  const { nodes } = useGLTF("/assets/models/hoodie-low-poly-clean-all-types.glb");
+  const { nodes } = useGLTF(modelPath);
   console.log("nodes:", nodes);
-  const { materialType, type, colour } = useControls({
-    materialType: {
+  const { "Material Type": materialType, "Configuration": type } = useControls({
+    "Material Type": {
       options: {
         "French Terry Black": "black",
         "French Terry White": "white",
         "French Terry Grey Marle": "grey",
       },
     },
-    type: {
+    "Configuration": {
       options: {
         "Regular Kangaroo Pocket": "reg-fp",
         "Regular Side Pocket": "reg-sp",
@@ -27,6 +29,7 @@ export function Hoodie(props) {
     },
     // colour: { value: "blue" },
   });
+  console.log("materialType:", materialType);
   const texture = useGetTexture(materialType);
   console.log("materialType:", materialType);
   const material = new MeshPhysicalMaterial(texture);
@@ -56,4 +59,4 @@ export function Hoodie(props) {
   );
 }
 
-useGLTF.preload("/assets/models/hoodie.glb");
+useGLTF.preload(modelPath);

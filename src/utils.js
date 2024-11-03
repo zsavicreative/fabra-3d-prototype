@@ -15,7 +15,7 @@ export function useGetTexture(materialType) {
   for (const key in texture) {
     texture[key].wrapS = RepeatWrapping;
     texture[key].wrapT = RepeatWrapping;
-    texture[key].repeat.set(14, 14);
+    texture[key].repeat.set(10, 10);
   }
 
   return texture;

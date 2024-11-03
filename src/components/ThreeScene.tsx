@@ -18,7 +18,7 @@ import { Hoodie } from "./models/Hoodie";
 import { RegularKangaroo } from "./models/RegularKangaroo";
 
 const cameraConfig = {
-  position: [0, 0, 10],
+  position: [0, 0, 3.8],
   fov: 30,
 };
 
@@ -30,20 +30,27 @@ export default function ThreeScene() {
     <div className='w-full h-screen'>
       <Canvas shadows camera={cameraConfig} gl={{ preserveDrawingBuffer: true }}>
         {/* <ambientLight intensity={0.5} /> */}
-        {/* <spotLight position={[0, 1, 0]} angle={0.5} penumbra={1} shadow-mapSize={2048} castShadow /> */}
+        <spotLight
+          position={[0, 0.5, 1.9]}
+          angle={1}
+          penumbra={0.25}
+          shadow-mapSize={2048}
+          castShadow
+          intensity={5}
+        />
 
-        <CameraRig>
-          <OrbitControls />
+        {/* <CameraRig> */}
+        <OrbitControls />
 
-          {/* <Backdrop /> */}
-          <Center>
-            <Hoodie />
-            {/* <RegularKangaroo /> */}
-          </Center>
-        </CameraRig>
+        {/* <Backdrop /> */}
+        <Center>
+          <Hoodie />
+          {/* <RegularKangaroo /> */}
+        </Center>
+        {/* </CameraRig> */}
 
-        <ContactShadows position={[0, -0.5, 0]} opacity={0.8} scale={3} blur={3} far={4} />
-        <Environment preset='city' />
+        <ContactShadows position={[0, -0.9, 0]} opacity={0.8} scale={3} blur={3} far={4} />
+        <Environment preset='city' background={false} />
       </Canvas>
     </div>
   );
@@ -52,20 +59,21 @@ export default function ThreeScene() {
 function CameraRig({ children }) {
   const group = useRef();
   const snap = useSnapshot(state);
-  // useFrame((state, delta) => {
-  //   easing.damp3(
-  //     state.camera.position,
-  //     [snap.intro ? -state.viewport.width / 4 : 0, 0, 2],
-  //     0.25,
-  //     delta,
-  //   );
-  //   easing.dampE(
-  //     group.current.rotation,
-  //     [state.pointer.y / 10, -state.pointer.x / 5, 0],
-  //     0.25,
-  //     delta,
-  //   );
-  // });
+
+  useFrame((state, delta) => {
+    easing.damp3(
+      state.camera.position,
+      [snap.intro ? -state.viewport.width / 4 : 0, 0, 3.8],
+      0.25,
+      delta,
+    );
+    easing.dampE(
+      group.current.rotation,
+      [state.pointer.y / 10, -state.pointer.x / 5, 0],
+      0.25,
+      delta,
+    );
+  });
   return <group ref={group}>{children}</group>;
 }
 

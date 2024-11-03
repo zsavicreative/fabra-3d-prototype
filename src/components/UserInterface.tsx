@@ -1,10 +1,15 @@
 import React from "react";
+import { useSnapshot } from "valtio";
+import { state } from "../store";
+import { Leva } from "leva";
 
 function UserInterface() {
+  const snapshot = useSnapshot(state);
+
   return (
-    <div className='absolute top-0 left-0 z-10 pointer-events-none'>
-      <p>put ui here</p>
-    </div>
+    <>
+      <Leva />
+    </>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useTexture } from "@react-three/drei";
-import { ClampToEdgeWrapping, RepeatWrapping } from "three";
+import { ClampToEdgeWrapping, DoubleSide, MeshPhysicalMaterial, RepeatWrapping } from "three";
 
 export function useGetTexture(materialType) {
   const texturePath = `/assets/textures/texture-${materialType}/textures`;
@@ -15,7 +15,7 @@ export function useGetTexture(materialType) {
   for (const key in texture) {
     texture[key].wrapS = RepeatWrapping;
     texture[key].wrapT = RepeatWrapping;
-    texture[key].repeat.set(10, 10);
+    texture[key].repeat.set(6, 6);
   }
 
   return texture;
@@ -30,4 +30,14 @@ export function hideShowParts(type, nodes) {
       nodes[key].visible = false;
     }
   }
+}
+
+export function createPBRMaterial(materialType) {
+  const texture = useGetTexture(materialType);
+  const material = new MeshPhysicalMaterial(texture);
+  material.side = DoubleSide;
+  material.displacementScale = 0.005;
+  material.normalScale.set(2, 2);
+
+  return material;
 }

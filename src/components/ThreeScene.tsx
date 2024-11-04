@@ -1,4 +1,4 @@
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   AccumulativeShadows,
@@ -16,7 +16,6 @@ import { useSnapshot } from "valtio";
 import { easing } from "maath";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
-import { RegularKangaroo } from "./models/RegularKangaroo";
 import { Polo } from "./models/Polo";
 
 const cameraConfig = {
@@ -37,7 +36,11 @@ export default function ThreeScene() {
 
     // colour: { value: "blue" },
   });
-  console.log(apparel);
+
+  useEffect(() => {
+    state.currentMeshType = apparel;
+  }, [apparel]);
+
   // const texture = useGetTexture(snapshot);
 
   return (
@@ -45,8 +48,17 @@ export default function ThreeScene() {
       <Canvas shadows camera={cameraConfig} gl={{ preserveDrawingBuffer: true }}>
         {/* <ambientLight intensity={0.5} /> */}
         <spotLight
-          position={[0, 0.5, 1.9]}
+          position={[0, 0.5, 1.5]}
           angle={1}
+          penumbra={0.25}
+          shadow-mapSize={2048}
+          castShadow
+          intensity={5}
+        />
+
+        <spotLight
+          position={[0, 0.05, -1.5]}
+          angle={2}
           penumbra={0.25}
           shadow-mapSize={2048}
           castShadow

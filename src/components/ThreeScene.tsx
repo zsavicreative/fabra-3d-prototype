@@ -17,6 +17,7 @@ import { easing } from "maath";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
 import { Polo } from "./models/Polo";
+import SelectedMeshController from "./SelectedMeshController";
 
 const cameraConfig = {
   position: [0, 0, 3.8],
@@ -33,40 +34,39 @@ export default function ThreeScene() {
         "Classic Polo Sweatshirt": "polo",
       },
     },
-
-    // colour: { value: "blue" },
   });
 
   useEffect(() => {
     state.currentMeshType = apparel;
   }, [apparel]);
 
-  // const texture = useGetTexture(snapshot);
-
   return (
     <div className='w-full h-screen'>
-      <Canvas shadows camera={cameraConfig} gl={{ preserveDrawingBuffer: true }}>
-        {/* <ambientLight intensity={0.5} /> */}
-        <spotLight
+      <Canvas shadows camera={cameraConfig} gl={{ preserveDrawingBuffer: false }}>
+        {/* <spotLight
           position={[0, 0.5, 1.5]}
           angle={1}
           penumbra={0.25}
-          shadow-mapSize={2048}
+          shadow-mapSize={1024}
           castShadow
           intensity={5}
-        />
+        /> */}
 
         <spotLight
-          position={[0, 0.05, -1.5]}
-          angle={2}
-          penumbra={0.25}
+          position={[0, 0, -1.5]}
+          angle={1}
+          penumbra={0.1}
           shadow-mapSize={2048}
           castShadow
-          intensity={3.5}
+          intensity={2}
         />
 
         {/* <CameraRig> */}
-        <OrbitControls minPolarAngle={1.25} maxPolarAngle={1.25} />
+        <OrbitControls
+        // minPolarAngle={1.25}
+        // maxPolarAngle={1.25}
+        // enablePan={false}
+        />
 
         {/* <Backdrop /> */}
         <Center>
@@ -76,7 +76,14 @@ export default function ThreeScene() {
         {/* </CameraRig> */}
 
         <ContactShadows position={[0, -0.9, 0]} opacity={0.8} scale={3} blur={3} far={4} />
-        <Environment preset='city' background={false} />
+        <Environment
+          preset='warehouse'
+          background={false}
+          environmentRotation={[0, -1, 1]}
+          // resolution={2048}
+        />
+
+        {/* <SelectedMeshController /> */}
       </Canvas>
     </div>
   );

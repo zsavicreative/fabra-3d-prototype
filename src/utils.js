@@ -1,5 +1,5 @@
 import { useTexture } from "@react-three/drei";
-import { ClampToEdgeWrapping, DoubleSide, MeshPhysicalMaterial, RepeatWrapping } from "three";
+import { DoubleSide, MeshPhysicalMaterial, RepeatWrapping } from "three";
 
 export function useGetTexture(materialType) {
   const texturePath = `/assets/textures/texture-${materialType}/textures`;
@@ -32,9 +32,8 @@ export function hideShowParts(type, nodes) {
   }
 }
 
-export function createPBRMaterial(materialType) {
-  const texture = useGetTexture(materialType);
-  const material = new MeshPhysicalMaterial(texture);
+export function createPBRMaterial(textures) {
+  const material = new MeshPhysicalMaterial(textures);
   material.side = DoubleSide;
   material.displacementScale = 0.005;
   material.normalScale.set(2, 2);

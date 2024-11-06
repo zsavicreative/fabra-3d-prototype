@@ -1,6 +1,6 @@
-import React, { useMemo } from "react";
+import React from "react";
 import { useSnapshot } from "valtio";
-import { Leva, useControls } from "leva";
+import { Leva } from "leva";
 import { AnimatePresence, motion } from "framer-motion";
 import { state } from "../store";
 import { keyValueLists } from "../constants";
@@ -9,7 +9,7 @@ function UserInterface() {
   const snapshot = useSnapshot(state);
 
   return (
-    <div className=''>
+    <>
       <AnimatePresence>
         {snapshot.introFinished && (
           <>
@@ -62,9 +62,9 @@ function UserInterface() {
               animate={{ opacity: 1, x: 0, y: 0 }}
               exit={{ opacity: 0, x: 20, y: -20 }}
               transition={{ duration: 0.5 }}
-              className='w-[400px] absolute top-5 right-5'
+              className='w-[400px] absolute top-5 right-5 pointer-events-auto z-10'
             >
-              <Leva fill />
+              <Leva fill oneLineLabels />
             </motion.div>
 
             <motion.div
@@ -79,7 +79,7 @@ function UserInterface() {
           </>
         )}
       </AnimatePresence>
-    </div>
+    </>
   );
 }
 

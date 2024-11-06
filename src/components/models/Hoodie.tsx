@@ -1,8 +1,7 @@
 import { useGLTF } from "@react-three/drei";
 import { useControls } from "leva";
-import { DoubleSide, MeshPhysicalMaterial } from "three";
 import { createPBRMaterial, useGetTexture } from "../../utils";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { state } from "../../store";
 
 const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff", "right-cuff"];
@@ -10,8 +9,7 @@ const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff
 const modelPath = "/assets/models/hoodie-full-clean-test.glb";
 
 export function Hoodie(props) {
-  const [hovered, setHovered] = useState(null);
-  const ref = useRef();
+  const hoodieGroupRef = useRef();
   const { nodes } = useGLTF(modelPath);
 
   const { "Material Type": materialType, "Configuration": type } = useControls({
@@ -34,8 +32,8 @@ export function Hoodie(props) {
   });
 
   const currentMeshesArray = useMemo(() => {
-    let currentMeshesArray = [];
-    Object.keys(nodes).map((key, index) => {
+    const currentMeshesArray = [];
+    Object.keys(nodes).map((key) => {
       if (key !== "Scene" && nodes[key].type === "Mesh") {
         const isVisible = key.includes(type) || defaultParts.includes(key);
         if (isVisible) {
@@ -44,32 +42,29 @@ export function Hoodie(props) {
       }
     });
 
+    state.currentMeshes["hoodie"] = currentMeshesArray;
     return currentMeshesArray;
-  }, [type]);
-
-  function handlePointerOver(e) {
-    e.stopPropagation();
-    console.log(e.object.name);
-    setHovered(e.object.name);
-  }
+  }, [nodes, type]);
 
   function handleClicked(e) {
     e.stopPropagation();
-    console.log("clicked:", e.object.name);
+    // console.log("clicked:", e.object.name);
     state.currentSelectedMesh = e.object.name;
   }
 
-  function handlePointerOut(e) {
-    e.stopPropagation();
-    setHovered(null);
-  }
+  const currentTexture = useGetTexture(materialType);
 
   useEffect(() => {
-    if (hovered) {
-      console.log("hovered:", hovered);
-      state.currentHoveredMesh = hovered;
+    const currentMaterial = createPBRMaterial(currentTexture);
+
+    if (hoodieGroupRef.current) {
+      hoodieGroupRef.current.children.forEach((child) => {
+        if (child.name !== "Scene") {
+          child.material = currentMaterial;
+        }
+      });
     }
-  }, [hovered]);
+  }, [materialType, type]);
 
   return (
     <group
@@ -77,19 +72,17 @@ export function Hoodie(props) {
       dispose={null}
       scale={0.02}
       rotation={[Math.PI / 2, 0, 0]}
-      ref={ref}
-      onPointerOver={(e) => handlePointerOver(e)}
-      onPointerOut={(e) => handlePointerOut(e)}
-      onPointerMissed={(e) => handlePointerOut(e)}
+      ref={hoodieGroupRef}
       onClick={(e) => handleClicked(e)}
     >
       {currentMeshesArray.map((mesh, index) => (
         <mesh
           key={index}
           geometry={mesh.geometry}
-          material={createPBRMaterial(materialType)}
           name={mesh.name}
           castShadow
+          receiveShadow
+          //test
         />
       ))}
     </group>

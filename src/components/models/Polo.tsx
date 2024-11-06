@@ -1,14 +1,14 @@
 import { useGLTF } from "@react-three/drei";
 import { useControls } from "leva";
-import { DoubleSide, MeshPhysicalMaterial } from "three";
-import { useGetTexture } from "../../utils";
+import { MeshPhysicalMaterial } from "three";
+import { createPBRMaterial, useGetTexture } from "../../utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
 import { state } from "../../store";
 
 const defaultParts = ["collar"];
 
-const buttonParts = [
+export const buttonParts = [
   // "button-one_1",
   "button-one_2",
   // "button-one_3",
@@ -19,10 +19,15 @@ const buttonParts = [
 
 const modelPath = "/assets/models/reg-polo.glb";
 
+const buttonMaterial = new MeshPhysicalMaterial({
+  metalness: 0.5,
+  reflectivity: 0.5,
+  roughness: 0.5,
+});
+
 export function Polo(props) {
-  const ref = useRef();
+  const poloGroupRef = useRef();
   const snap = useSnapshot(state);
-  const [hovered, setHovered] = useState(null);
   const { nodes } = useGLTF(modelPath);
   const {
     "Material Type": materialType,
@@ -55,39 +60,21 @@ export function Polo(props) {
 
   const currentMeshesArray = useMemo(() => {
     //generate the array of meshes to show based on key and type
-    let currentMeshesArray = [];
-    Object.keys(nodes).map((key, index) => {
+    const currentMeshesArray = [];
+    Object.keys(nodes).map((key) => {
       if (key !== "Scene" && nodes[key].type === "Mesh") {
         const isVisible =
-          key.includes(bodyType) ||
-          key.includes(sleeveType) ||
-          defaultParts.includes(key) ||
-          buttonParts.includes(key);
-        const isButtonMesh = buttonParts.includes(key);
+          key.includes(bodyType) || key.includes(sleeveType) || defaultParts.includes(key);
 
-        if (isVisible || isButtonMesh) {
+        if (isVisible) {
           currentMeshesArray.push(nodes[key]);
         }
       }
     });
 
-    state.currentMeshArray = currentMeshesArray;
+    state.currentMeshes["polo"] = currentMeshesArray;
     return currentMeshesArray;
   }, [nodes, bodyType, sleeveType]);
-
-  const texture = useGetTexture(materialType);
-  const shirtMaterial = new MeshPhysicalMaterial(texture);
-  shirtMaterial.side = DoubleSide;
-  shirtMaterial.displacementScale = 0.005;
-  shirtMaterial.normalScale.set(2, 2);
-
-  const buttonMaterial = new MeshPhysicalMaterial({ color: buttonColour });
-
-  function handlePointerOver(e) {
-    e.stopPropagation();
-    // console.log(e.object.name);
-    setHovered(e.object.name);
-  }
 
   function handleClicked(e) {
     e.stopPropagation();
@@ -95,17 +82,21 @@ export function Polo(props) {
     state.currentSelectedMesh = e.object.name;
   }
 
-  function handlePointerOut(e) {
-    e.stopPropagation();
-    setHovered(null);
-  }
+  const currentTexture = useGetTexture(materialType);
 
   useEffect(() => {
-    if (hovered) {
-      // console.log("hovered:", hovered);
-      state.currentHoveredMesh = hovered;
+    const currentMaterial = createPBRMaterial(currentTexture);
+
+    if (poloGroupRef.current) {
+      poloGroupRef.current.children.forEach((child) => {
+        if (child.name !== "Scene") {
+          child.material = currentMaterial;
+        }
+      });
     }
-  }, [hovered]);
+  }, [materialType, sleeveType, bodyType]);
+
+  // console.log(state.currentMaterials["polo"]);
 
   return (
     <group
@@ -113,23 +104,26 @@ export function Polo(props) {
       dispose={null}
       scale={0.02}
       rotation={[Math.PI / 2, 0, 0]}
-      ref={ref}
-      onPointerOver={(e) => handlePointerOver(e)}
-      onPointerOut={(e) => handlePointerOut(e)}
-      onPointerMissed={(e) => handlePointerOut(e)}
+      ref={poloGroupRef}
       onClick={(e) => handleClicked(e)}
     >
-      {currentMeshesArray.map((mesh, index) => {
-        return (
-          <mesh
-            key={index}
-            geometry={mesh.geometry}
-            material={buttonParts.includes(mesh.name) ? buttonMaterial : shirtMaterial}
-            name={mesh.name}
-            castShadow
-          />
-        );
-      })}
+      <mesh
+        geometry={nodes["button-one_2"].geometry}
+        material={buttonMaterial}
+        material-color={buttonColour}
+        name='button-one_2'
+      />
+
+      <mesh
+        geometry={nodes["button-two_2"].geometry}
+        material={buttonMaterial}
+        material-color={buttonColour}
+        name='button-two_2'
+      />
+
+      {currentMeshesArray.map((mesh, index) => (
+        <mesh key={index} geometry={mesh.geometry} name={mesh.name} castShadow />
+      ))}
     </group>
   );
 }

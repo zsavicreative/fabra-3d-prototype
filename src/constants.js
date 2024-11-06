@@ -45,5 +45,3 @@ export const keyValueLists = {
     "reg-body_band": "Body Band",
   },
 };
-
-export const keyValueListHoodie = {};

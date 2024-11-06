@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useMemo } from "react";
 import { useSnapshot } from "valtio";
 import { state } from "../store";
 import { folder, useControls } from "leva";
@@ -15,27 +15,24 @@ export default function SelectedMeshController() {
 
   console.log(nodes);
   const snapshot = useSnapshot(state);
-  console.log("snapshot:", snapshot);
 
-  const currentMeshMaterialList = Object.keys(
-    snapshot.currentMaterials[snapshot.currentMeshType],
-  ).reduce((acc, key) => {
-    if (nodes[key] && !buttonParts.includes(key)) {
-      return {
-        ...acc,
-        [keyValueLists[snapshot.currentMeshType][key]]: {
-          options: {
-            "French Terry Grey Marle": "grey",
-            "French Terry Black": "black",
-            "French Terry White": "white",
-          },
-        },
-      };
-    }
-    return acc;
-  }, {});
-
-  console.log("currentMeshMaterialList:", currentMeshMaterialList);
+  // const currentMeshMaterialList = Object.keys(
+  //   snapshot.currentMaterials[snapshot.currentMeshType],
+  // ).reduce((acc, key) => {
+  //   if (nodes[key] && !buttonParts.includes(key)) {
+  //     return {
+  //       ...acc,
+  //       [keyValueLists[snapshot.currentMeshType][key]]: {
+  //         options: {
+  //           "French Terry Grey Marle": "grey",
+  //           "French Terry Black": "black",
+  //           "French Terry White": "white",
+  //         },
+  //       },
+  //     };
+  //   }
+  //   return acc;
+  // }, {});
 
   const { "Selected Part Material": selectedMeshMat } = useControls({
     "Selected Part Material": {
@@ -46,22 +43,30 @@ export default function SelectedMeshController() {
       },
     },
 
-    "Current Mesh Materials": folder({
-      ...currentMeshMaterialList,
-    }),
+    // "Current Mesh Materials": folder({
+    //   ...currentMeshMaterialList,
+    // }),
   });
-
-  const material = createPBRMaterial(selectedMeshMat);
 
   useEffect(() => {
     console.log(selectedMeshMat);
     if (snapshot.currentSelectedMesh) {
       const selectedMesh = nodes[snapshot.currentSelectedMesh];
       if (selectedMesh) {
-        selectedMesh.material = material;
+        selectedMesh.material = createPBRMaterial(selectedMeshMat);
       }
     }
   }, [selectedMeshMat]);
+
+  useEffect(() => {
+    if (snapshot.currentSelectedMesh) {
+      const selectedMesh = nodes[snapshot.currentSelectedMesh];
+      console.log("selectedMesh:", selectedMesh);
+      if (selectedMesh) {
+        selectedMesh.material = material;
+      }
+    }
+  }, [snapshot.currentSelectedMesh]);
 
   return null;
 }

@@ -42,7 +42,6 @@ export function Hoodie(props) {
       }
     });
 
-    state.currentMeshes["hoodie"] = currentMeshesArray;
     return currentMeshesArray;
   }, [nodes, type]);
 

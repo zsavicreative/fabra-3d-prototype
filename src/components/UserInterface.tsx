@@ -69,12 +69,9 @@ function UserInterface() {
 
             <motion.div
               key='current-selection'
-              className='absolute bottom-5 left-5 text-blue-950 text-4xl'
+              className='absolute bottom-5 left-5 text-blue-950 text-4xl bg-white p-5 rounded-lg z-10'
             >
-              <h2>
-                Currently Selected Part:{" "}
-                {keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh]}
-              </h2>
+              <h2>{keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh]}</h2>
             </motion.div>
           </>
         )}

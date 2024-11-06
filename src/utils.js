@@ -33,7 +33,9 @@ export function hideShowParts(type, nodes) {
 }
 
 export function createPBRMaterial(textures) {
+  console.log("textures:", textures);
   const material = new MeshPhysicalMaterial(textures);
+  console.log("material:", material);
   material.side = DoubleSide;
   material.displacementScale = 0.005;
   material.normalScale.set(2, 2);

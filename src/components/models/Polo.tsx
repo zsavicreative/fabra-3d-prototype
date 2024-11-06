@@ -4,7 +4,7 @@ import { MeshPhysicalMaterial } from "three";
 import { createPBRMaterial, useGetTexture } from "../../utils";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { useSnapshot } from "valtio";
-import { state } from "../../store";
+import { state, useStore } from "../../store";
 
 const defaultParts = ["collar"];
 
@@ -26,16 +26,22 @@ const buttonMaterial = new MeshPhysicalMaterial({
 });
 
 export function Polo(props) {
+  const snapshot = useSnapshot(state);
   const poloGroupRef = useRef();
-  const snap = useSnapshot(state);
   const { nodes } = useGLTF(modelPath);
-  const {
-    "Material Type": materialType,
-    "Sleeve Length": sleeveType,
-    "Body Length": bodyType,
-    "Button Colour": buttonColour,
-  } = useControls({
-    "Material Type": {
+  // const currentMaterials = useStore((state) => state.currentMaterials);
+  const setCurrentMaterials = useStore((state) => state.setCurrentMaterials);
+
+  const [
+    {
+      "Full Material Type": materialType,
+      "Sleeve Length": sleeveType,
+      "Body Length": bodyType,
+      "Button Colour": buttonColour,
+      "Selected Part Material": selectedMeshMat,
+    },
+  ] = useControls(() => ({
+    "Full Material Type": {
       options: {
         "French Terry Grey Marle": "grey",
         "French Terry Black": "black",
@@ -55,8 +61,16 @@ export function Polo(props) {
       },
     },
 
+    "Selected Part Material": {
+      options: {
+        "French Terry Grey Marle": "grey",
+        "French Terry Black": "black",
+        "French Terry White": "white",
+      },
+    },
+
     "Button Colour": { value: "#ffffff" },
-  });
+  }));
 
   const currentMeshesArray = useMemo(() => {
     //generate the array of meshes to show based on key and type
@@ -72,7 +86,6 @@ export function Polo(props) {
       }
     });
 
-    state.currentMeshes["polo"] = currentMeshesArray;
     return currentMeshesArray;
   }, [nodes, bodyType, sleeveType]);
 
@@ -82,49 +95,66 @@ export function Polo(props) {
     state.currentSelectedMesh = e.object.name;
   }
 
-  const currentTexture = useGetTexture(materialType);
+  const currentFullTexture = useGetTexture(materialType);
+  const selectedMeshTexture = useGetTexture(selectedMeshMat);
 
   useEffect(() => {
-    const currentMaterial = createPBRMaterial(currentTexture);
+    console.log("useEffect for changing material");
+    const currentMaterial = createPBRMaterial(currentFullTexture);
 
     if (poloGroupRef.current) {
       poloGroupRef.current.children.forEach((child) => {
         if (child.name !== "Scene") {
           child.material = currentMaterial;
+          setCurrentMaterials(snapshot.currentMeshType, child.name, currentMaterial);
         }
       });
     }
   }, [materialType, sleeveType, bodyType]);
 
-  // console.log(state.currentMaterials["polo"]);
+  useEffect(() => {
+    console.log(selectedMeshMat);
+    if (snapshot.currentSelectedMesh) {
+      poloGroupRef.current.children.forEach((child) => {
+        if (child.name === snapshot.currentSelectedMesh) {
+          child.material = createPBRMaterial(selectedMeshTexture);
+        }
+      });
+
+      console.log(selectedMeshMat);
+      // setLevaState({ "Selected Part Material":  });
+    }
+  }, [selectedMeshMat]);
 
   return (
-    <group
-      {...props}
-      dispose={null}
-      scale={0.02}
-      rotation={[Math.PI / 2, 0, 0]}
-      ref={poloGroupRef}
-      onClick={(e) => handleClicked(e)}
-    >
-      <mesh
-        geometry={nodes["button-one_2"].geometry}
-        material={buttonMaterial}
-        material-color={buttonColour}
-        name='button-one_2'
-      />
+    <>
+      <group
+        {...props}
+        dispose={null}
+        scale={0.02}
+        rotation={[Math.PI / 2, 0, 0]}
+        ref={poloGroupRef}
+        onClick={(e) => handleClicked(e)}
+      >
+        <mesh
+          geometry={nodes["button-one_2"].geometry}
+          material={buttonMaterial}
+          material-color={buttonColour}
+          name='button-one_2'
+        />
 
-      <mesh
-        geometry={nodes["button-two_2"].geometry}
-        material={buttonMaterial}
-        material-color={buttonColour}
-        name='button-two_2'
-      />
+        <mesh
+          geometry={nodes["button-two_2"].geometry}
+          material={buttonMaterial}
+          material-color={buttonColour}
+          name='button-two_2'
+        />
 
-      {currentMeshesArray.map((mesh, index) => (
-        <mesh key={index} geometry={mesh.geometry} name={mesh.name} castShadow />
-      ))}
-    </group>
+        {currentMeshesArray.map((mesh, index) => (
+          <mesh key={index} geometry={mesh.geometry} name={mesh.name} castShadow />
+        ))}
+      </group>
+    </>
   );
 }
 

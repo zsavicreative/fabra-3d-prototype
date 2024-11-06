@@ -1,16 +1,14 @@
 import { proxy } from "valtio";
+import { create } from "zustand";
 
 export const state = proxy({
   introFinished: true,
   currentMeshType: "hoodie",
   currentHoveredMesh: null,
-  currentSelectedMesh: null,
+  currentSelectedMesh: "intro",
+});
 
-  currentMeshes: {
-    hoodie: [],
-    polo: [],
-  },
-
+export const useStore = create((set) => ({
   currentMaterials: {
     hoodie: {
       "reg-sp-left-pocket": null,
@@ -47,4 +45,27 @@ export const state = proxy({
       "reg-body_band": null,
     },
   },
-});
+
+  setCurrentMaterials: (meshType, key, material) => {
+    set((state) => {
+      return {
+        currentMaterials: {
+          ...state.currentMaterials,
+          [meshType]: {
+            ...state.currentMaterials[meshType],
+            [key]: material,
+          },
+        },
+      };
+    });
+  },
+}));
+
+// export function setCurrentMaterials(meshType, key, material) {
+//   console.log("meshType:", meshType);
+//   console.log("key:", key);
+//   console.log("material:", material);
+//   useStore.setState((state) => {
+//     state.currentMaterials[meshType][key] = material;
+//   });
+// }

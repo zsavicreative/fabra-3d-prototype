@@ -11,13 +11,14 @@ import {
   useGLTF,
   useTexture,
 } from "@react-three/drei";
+import { useSpring, animated } from "@react-spring/three";
 import { useControls } from "leva";
 import { useSnapshot } from "valtio";
 import { easing } from "maath";
+import { keyValueLists } from "../constants";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
 import { Polo } from "./models/Polo";
-import SelectedMeshController from "./SelectedMeshController";
 
 const cameraConfig = {
   position: [0, 0, 3.8],
@@ -25,7 +26,7 @@ const cameraConfig = {
 };
 
 export default function ThreeScene() {
-  const snapshot = useSnapshot(state);
+  // const snapshot = useSnapshot(state);
 
   const { "Apparel Type": apparel } = useControls({
     "Apparel Type": {
@@ -53,60 +54,116 @@ export default function ThreeScene() {
         /> */}
 
         <spotLight
-          position={[0, 0, -1.5]}
-          angle={1}
-          penumbra={0.1}
+          position={[0, 0.3, 1.25]}
+          angle={Math.PI / 4}
+          penumbra={0.01}
           shadow-mapSize={2048}
-          castShadow
-          intensity={2}
+          intensity={1}
         />
 
-        {/* <CameraRig> */}
-        <OrbitControls
-        // minPolarAngle={1.25}
-        // maxPolarAngle={1.25}
-        // enablePan={false}
+        <CameraRig>
+          <OrbitControls
+            // minPolarAngle={1.25}
+            // maxPolarAngle={1.25}
+            // enablePan={false}
+            makeDefault
+          />
+
+          {/* <Backdrop /> */}
+          <Center>
+            {apparel === "hoodie" && <Hoodie />}
+            {apparel === "polo" && <Polo />}
+          </Center>
+        </CameraRig>
+
+        <ContactShadows
+          position={[0, -0.9, 0]}
+          opacity={0.8}
+          scale={3}
+          blur={3}
+          far={4}
+          onClick={() => (state.currentSelectedMesh = null)}
         />
-
-        {/* <Backdrop /> */}
-        <Center>
-          {apparel === "hoodie" && <Hoodie />}
-          {apparel === "polo" && <Polo />}
-        </Center>
-        {/* </CameraRig> */}
-
-        <ContactShadows position={[0, -0.9, 0]} opacity={0.8} scale={3} blur={3} far={4} />
         <Environment
-          preset='warehouse'
+          preset='city'
           background={false}
-          environmentRotation={[0, -1, 1]}
+          // environmentRotation={[0, -1, 1]}
+          environmentIntensity={1}
           // resolution={2048}
         />
-
-        {/* <SelectedMeshController /> */}
       </Canvas>
     </div>
   );
 }
 
+const cameraLocations = {
+  "intro": {
+    position: [-1.5, 1, 3.8],
+    target: [0, 0, 0],
+  },
+  "default": {
+    position: [0, 0, 3.8],
+    target: [0, 0, 0],
+  },
+  "Front Body": {
+    position: [0, 0.7, 4],
+    target: [0, 0, 0],
+  },
+  "Back Body": {
+    position: [0, 0.7, -4],
+    target: [0, 0, 0],
+  },
+  "Body Band": {
+    position: [0, -1, 2],
+    target: [0, -0.5, 0],
+  },
+  "Left Sleeve": {
+    position: [3, 0, 1],
+    target: [0, 0, 0],
+  },
+  "Right Sleeve": {
+    position: [-3, 0, 1],
+    target: [0, 0, 0],
+  },
+  "Left Cuff": {
+    position: [1.25, -1.25, 0.25],
+    target: [0, 0, 0],
+  },
+  "Right Cuff": {
+    position: [-1.25, -1.25, 0.25],
+    target: [0, 0, 0],
+  },
+  "Collar": {
+    position: [0, 0.7, 3],
+    target: [0, 0, 0],
+  },
+  "Hood": {
+    position: [0.5, 2, 1],
+    target: [0, 0.5, 0],
+  },
+  "Front Pocket": {
+    position: [0, -0.5, 2.5],
+    target: [0, -0.25, 0],
+  },
+};
+
 function CameraRig({ children }) {
   const group = useRef();
-  const snap = useSnapshot(state);
+  const snapshot = useSnapshot(state);
+  const currentSelectedMesh = keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh];
 
   useFrame((state, delta) => {
-    easing.damp3(
-      state.camera.position,
-      [snap.intro ? -state.viewport.width / 4 : 0, 0, 3.8],
-      0.25,
-      delta,
-    );
-    easing.dampE(
-      group.current.rotation,
-      [state.pointer.y / 10, -state.pointer.x / 5, 0],
-      0.25,
-      delta,
-    );
+    if (!currentSelectedMesh) return;
+    const positionLocation =
+      cameraLocations[currentSelectedMesh]?.position || cameraLocations["default"].position;
+    const targetLocation =
+      cameraLocations[currentSelectedMesh]?.target || cameraLocations["default"].target;
+
+    state.camera.lookAt(...targetLocation);
+    // easing.dampLookAt(state.camera, targetLocation, 0.4, delta);
+    easing.damp3(state.camera.position, positionLocation, 0.4, delta);
   });
+
   return <group ref={group}>{children}</group>;
 }
 

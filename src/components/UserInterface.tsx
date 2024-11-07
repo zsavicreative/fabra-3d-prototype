@@ -27,7 +27,7 @@ function UserInterface() {
                 </h1>
 
                 <div>
-                  <p className='underline font-bold'>Control tips:</p>
+                  <p className='underline font-bold text-lg'>Control tips:</p>
                   <ul className='list-disc pl-5'>
                     <li>
                       Use the controls on the top right to change the material of the selected part,

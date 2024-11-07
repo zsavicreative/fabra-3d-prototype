@@ -14,7 +14,7 @@ import {
 import { useSpring, animated } from "@react-spring/three";
 import { useControls } from "leva";
 import { useSnapshot } from "valtio";
-import { easing } from "maath";
+import { easing, dampE } from "maath";
 import { keyValueLists } from "../constants";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
@@ -68,13 +68,13 @@ export default function ThreeScene() {
             // enablePan={false}
             makeDefault
           />
-
-          {/* <Backdrop /> */}
-          <Center>
-            {apparel === "hoodie" && <Hoodie />}
-            {apparel === "polo" && <Polo />}
-          </Center>
         </CameraRig>
+
+        {/* <Backdrop /> */}
+        <Center>
+          {apparel === "hoodie" && <Hoodie />}
+          {apparel === "polo" && <Polo />}
+        </Center>
 
         <ContactShadows
           position={[0, -0.9, 0]}
@@ -134,8 +134,8 @@ const cameraLocations = {
     target: [0, 0, 0],
   },
   "Collar": {
-    position: [0, 0.7, 3],
-    target: [0, 0, 0],
+    position: [0.5, 2, 1],
+    target: [0, 0.5, 0],
   },
   "Hood": {
     position: [0.5, 2, 1],
@@ -148,23 +148,60 @@ const cameraLocations = {
 };
 
 function CameraRig({ children }) {
-  const group = useRef();
+  const groupRef = useRef();
   const snapshot = useSnapshot(state);
   const currentSelectedMesh = keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh];
 
+  const [springs, springCtrl] = useSpring(
+    () => ({
+      position:
+        cameraLocations[currentSelectedMesh]?.position || cameraLocations["default"].position,
+      target: cameraLocations[currentSelectedMesh]?.target || cameraLocations["default"].target,
+      config: { mass: 5, friction: 100 },
+      immediate: true,
+    }),
+    [],
+  );
+
   useFrame((state, delta) => {
     if (!currentSelectedMesh) return;
+    state.camera.position.lerp(
+      {
+        x: springs.position.get()[0],
+        y: springs.position.get()[1],
+        z: springs.position.get()[2],
+      },
+      delta * 20,
+    );
+
+    state.camera.lookAt(springs.target.get()[0], springs.target.get()[1], springs.target.get()[2]);
+  });
+
+  useEffect(() => {
     const positionLocation =
       cameraLocations[currentSelectedMesh]?.position || cameraLocations["default"].position;
     const targetLocation =
       cameraLocations[currentSelectedMesh]?.target || cameraLocations["default"].target;
 
-    state.camera.lookAt(...targetLocation);
-    // easing.dampLookAt(state.camera, targetLocation, 0.4, delta);
-    easing.damp3(state.camera.position, positionLocation, 0.4, delta);
-  });
+    springCtrl.start({
+      position: positionLocation,
+      target: targetLocation,
+    });
+  }, [currentSelectedMesh]);
 
-  return <group ref={group}>{children}</group>;
+  useEffect(() => {
+    function handleEscape(e) {
+      if (e.key === "Escape") {
+        state.currentSelectedMesh = null;
+      }
+    }
+
+    window.addEventListener("keydown", handleEscape);
+
+    return () => window.removeEventListener("keydown", handleEscape);
+  }, []);
+
+  return <group ref={groupRef}>{children}</group>;
 }
 
 function Backdrop() {

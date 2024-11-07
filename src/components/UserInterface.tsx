@@ -11,6 +11,60 @@ function UserInterface() {
   return (
     <>
       <AnimatePresence>
+        {!snapshot.introFinished && (
+          <>
+            <motion.div
+              key='welcome-modal'
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 1, y: 20 }}
+              transition={{ duration: 0.5 }}
+              className='absolute top-0 left-0 z-20 w-full h-full bg-black/20 pointer-events-auto flex items-center justify-center'
+            >
+              <div className='p-5 bg-white shadow-md rounded-md overflow-hidden flex flex-col gap-5'>
+                <h1 className='text-center font-bold text-4xl'>
+                  Welcome to this <span className='text-[#7e5ef5]'>Fabra</span> POC
+                </h1>
+
+                <div>
+                  <p className='underline font-bold'>Control tips:</p>
+                  <ul className='list-disc pl-5'>
+                    <li>
+                      Use the controls on the top right to change the material of the selected part,
+                      or the whole model.
+                    </li>
+                    <li>While in free camera mode, click and drag to rotate around the model.</li>
+                    <li>Click the part of the model you wish to select.</li>
+                    <li>Once a part is selected the camera will swing to that part.</li>
+                    <li>The current selected part will be displayed on the bottom left.</li>
+                    <li>To enter free camera mode again, deselect the part.</li>
+                    <li>To deselect, click the ground, or press escape key.</li>
+                  </ul>
+                </div>
+
+                <button
+                  onClick={() => {
+                    state.introFinished = true;
+                  }}
+                  className='bg-[#7e5ef5] text-white px-8 py-2 rounded-md text-center mx-auto'
+                >
+                  Got it!
+                </button>
+              </div>
+            </motion.div>
+          </>
+        )}
+
+        <motion.div
+          key='leva-controls'
+          initial={{ opacity: 0, x: 20, y: -20 }}
+          animate={{ opacity: snapshot.introFinished ? 1 : 0, x: 0, y: 0 }}
+          exit={{ opacity: 0, x: 20, y: -20 }}
+          transition={{ duration: 0.5 }}
+          className='w-[400px] absolute top-5 right-5 pointer-events-auto z-10'
+        >
+          <Leva fill oneLineLabels />
+        </motion.div>
         {snapshot.introFinished && (
           <>
             <motion.a
@@ -55,17 +109,6 @@ function UserInterface() {
                 </svg>
               </div>
             </motion.a>
-
-            <motion.div
-              key='leva-controls'
-              initial={{ opacity: 0, x: 20, y: -20 }}
-              animate={{ opacity: 1, x: 0, y: 0 }}
-              exit={{ opacity: 0, x: 20, y: -20 }}
-              transition={{ duration: 0.5 }}
-              className='w-[400px] absolute top-5 right-5 pointer-events-auto z-10'
-            >
-              <Leva fill oneLineLabels />
-            </motion.div>
 
             <motion.div
               key='current-selection'

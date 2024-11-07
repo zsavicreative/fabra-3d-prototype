@@ -40,6 +40,7 @@ export function Polo(props) {
       "Button Colour": buttonColour,
       "Selected Part Material": selectedMeshMat,
     },
+    set,
   ] = useControls(() => ({
     "Full Material Type": {
       options: {
@@ -68,8 +69,6 @@ export function Polo(props) {
         "French Terry White": "white",
       },
     },
-
-    "Button Colour": { value: "#ffffff" },
   }));
 
   const currentMeshesArray = useMemo(() => {
@@ -91,8 +90,13 @@ export function Polo(props) {
 
   function handleClicked(e) {
     e.stopPropagation();
-    // console.log("clicked:", e.object.name);
     state.currentSelectedMesh = e.object.name;
+
+    poloGroupRef.current.children.forEach((child) => {
+      if (child.name === e.object.name) {
+        set({ "Selected Part Material": child.material.name });
+      }
+    });
   }
 
   const currentFullTexture = useGetTexture(materialType);
@@ -100,7 +104,7 @@ export function Polo(props) {
 
   useEffect(() => {
     console.log("useEffect for changing material");
-    const currentMaterial = createPBRMaterial(currentFullTexture);
+    const currentMaterial = createPBRMaterial(currentFullTexture, materialType);
 
     if (poloGroupRef.current) {
       poloGroupRef.current.children.forEach((child) => {
@@ -113,15 +117,14 @@ export function Polo(props) {
   }, [materialType, sleeveType, bodyType]);
 
   useEffect(() => {
-    console.log(selectedMeshMat);
     if (snapshot.currentSelectedMesh) {
       poloGroupRef.current.children.forEach((child) => {
         if (child.name === snapshot.currentSelectedMesh) {
-          child.material = createPBRMaterial(selectedMeshTexture);
+          child.material = createPBRMaterial(selectedMeshTexture, selectedMeshMat);
         }
       });
 
-      console.log(selectedMeshMat);
+      // console.log(selectedMeshMat);
       // setLevaState({ "Selected Part Material":  });
     }
   }, [selectedMeshMat]);
@@ -139,14 +142,14 @@ export function Polo(props) {
         <mesh
           geometry={nodes["button-one_2"].geometry}
           material={buttonMaterial}
-          material-color={buttonColour}
+          color={buttonColour}
           name='button-one_2'
         />
 
         <mesh
           geometry={nodes["button-two_2"].geometry}
           material={buttonMaterial}
-          material-color={buttonColour}
+          color={buttonColour}
           name='button-two_2'
         />
 

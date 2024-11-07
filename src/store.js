@@ -2,7 +2,7 @@ import { proxy } from "valtio";
 import { create } from "zustand";
 
 export const state = proxy({
-  introFinished: true,
+  introFinished: false,
   currentMeshType: "hoodie",
   currentHoveredMesh: null,
   currentSelectedMesh: "intro",

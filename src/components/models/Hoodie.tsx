@@ -1,7 +1,8 @@
+import { useEffect, useMemo, useRef } from "react";
 import { useGLTF } from "@react-three/drei";
+import { useSnapshot } from "valtio";
 import { useControls } from "leva";
 import { createPBRMaterial, useGetTexture } from "../../utils";
-import { useEffect, useMemo, useRef } from "react";
 import { state } from "../../store";
 
 const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff", "right-cuff"];
@@ -9,10 +10,18 @@ const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff
 const modelPath = "/assets/models/hoodie-full-clean-test.glb";
 
 export function Hoodie(props) {
+  const snapshot = useSnapshot(state);
   const hoodieGroupRef = useRef();
   const { nodes } = useGLTF(modelPath);
 
-  const { "Material Type": materialType, "Configuration": type } = useControls({
+  const [
+    {
+      "Material Type": materialType,
+      "Configuration": type,
+      "Selected Part Material": selectedMeshMat,
+    },
+    set,
+  ] = useControls(() => ({
     "Material Type": {
       options: {
         "French Terry Grey Marle": "grey",
@@ -29,7 +38,14 @@ export function Hoodie(props) {
         "Cropped Side Pocket": "crop-sp",
       },
     },
-  });
+    "Selected Part Material": {
+      options: {
+        "French Terry Grey Marle": "grey",
+        "French Terry Black": "black",
+        "French Terry White": "white",
+      },
+    },
+  }));
 
   const currentMeshesArray = useMemo(() => {
     const currentMeshesArray = [];
@@ -49,12 +65,19 @@ export function Hoodie(props) {
     e.stopPropagation();
     // console.log("clicked:", e.object.name);
     state.currentSelectedMesh = e.object.name;
+
+    hoodieGroupRef.current.children.forEach((child) => {
+      if (child.name === e.object.name) {
+        set({ "Selected Part Material": child.material.name });
+      }
+    });
   }
 
-  const currentTexture = useGetTexture(materialType);
+  const currentFullTexture = useGetTexture(materialType);
+  const selectedMeshTexture = useGetTexture(selectedMeshMat);
 
   useEffect(() => {
-    const currentMaterial = createPBRMaterial(currentTexture);
+    const currentMaterial = createPBRMaterial(currentFullTexture, materialType);
 
     if (hoodieGroupRef.current) {
       hoodieGroupRef.current.children.forEach((child) => {
@@ -64,6 +87,16 @@ export function Hoodie(props) {
       });
     }
   }, [materialType, type]);
+
+  useEffect(() => {
+    if (snapshot.currentSelectedMesh) {
+      hoodieGroupRef.current.children.forEach((child) => {
+        if (child.name === snapshot.currentSelectedMesh) {
+          child.material = createPBRMaterial(selectedMeshTexture, selectedMeshMat);
+        }
+      });
+    }
+  }, [selectedMeshMat]);
 
   return (
     <group

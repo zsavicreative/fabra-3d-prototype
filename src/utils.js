@@ -15,7 +15,7 @@ export function useGetTexture(materialType) {
   for (const key in texture) {
     texture[key].wrapS = RepeatWrapping;
     texture[key].wrapT = RepeatWrapping;
-    texture[key].repeat.set(6, 6);
+    texture[key].repeat.set(10, 10);
   }
 
   return texture;
@@ -32,13 +32,14 @@ export function hideShowParts(type, nodes) {
   }
 }
 
-export function createPBRMaterial(textures) {
+export function createPBRMaterial(textures, materialType) {
   console.log("textures:", textures);
   const material = new MeshPhysicalMaterial(textures);
   console.log("material:", material);
   material.side = DoubleSide;
   material.displacementScale = 0.005;
   material.normalScale.set(2, 2);
+  material.name = materialType;
 
   return material;
 }

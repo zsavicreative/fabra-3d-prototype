@@ -10,7 +10,7 @@ function UserInterface() {
 
   return (
     <>
-      <AnimatePresence mode='wait'>
+      <AnimatePresence>
         {!snapshot.introFinished && (
           <>
             <motion.div

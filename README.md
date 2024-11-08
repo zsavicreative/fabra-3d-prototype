@@ -29,8 +29,8 @@ A prototype 3D product customisation tool that allows users to interactively sel
 
 1.  **Clone the Repository**:
 
-    `git clone https://github.com/yourusername/fabra-3d-customizer.git
-    cd fabra-3d-customizer` 
+    `git clone https://github.com/zsavicreative/fabra-3d-prototype.git`
+    `cd fabra-3d-customizer` 
     
 3.  **Build and Run with Docker Compose**:
 	   -  `docker-compose up --build`

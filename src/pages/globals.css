@@ -87,3 +87,7 @@ select {
 select:parent {
   @apply w-full;
 }
+
+i.leva-c-ctBOWy:nth-child(3) {
+  @apply hidden;
+}

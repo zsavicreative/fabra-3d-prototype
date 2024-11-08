@@ -10,7 +10,7 @@ function UserInterface() {
 
   return (
     <>
-      <AnimatePresence>
+      <AnimatePresence mode='wait'>
         {!snapshot.introFinished && (
           <>
             <motion.div
@@ -19,7 +19,7 @@ function UserInterface() {
               animate={{ opacity: 1 }}
               exit={{ opacity: 1, y: 20 }}
               transition={{ duration: 0.5 }}
-              className='absolute top-0 left-0 z-20 w-full h-full bg-black/20 pointer-events-auto flex items-center justify-center'
+              className='absolute top-0 left-0 z-20 w-full h-full bg-black/20 pointer-events-auto flex items-center justify-center px-5'
             >
               <div className='p-5 bg-white shadow-md rounded-md overflow-hidden flex flex-col gap-5'>
                 <h1 className='text-center font-bold text-4xl'>
@@ -61,22 +61,22 @@ function UserInterface() {
           animate={{ opacity: snapshot.introFinished ? 1 : 0, x: 0, y: 0 }}
           exit={{ opacity: 0, x: 20, y: -20 }}
           transition={{ duration: 0.5 }}
-          className='w-[400px] absolute top-5 right-5 pointer-events-auto z-10'
+          className='w-full lg:w-[400px] absolute p-5 lg:top-0 lg:right-0 pointer-events-auto z-10'
         >
           <Leva fill oneLineLabels />
         </motion.div>
         {snapshot.introFinished && (
           <>
             <motion.a
-              initial={{ opacity: 0, x: -20, y: -20 }}
+              initial={{ opacity: 0, x: 20, y: 20 }}
               animate={{ opacity: 1, x: 0, y: 0 }}
-              exit={{ opacity: 0, x: -20, y: -20 }}
+              exit={{ opacity: 0, x: 20, y: 20 }}
               transition={{ duration: 0.5 }}
               key='fabra-logo'
               href='https://fabra.com/'
-              className='absolute top-5 left-5 text-white pointer-events-auto'
+              className='absolute bottom-0 right-0 p-5 text-white z-10'
             >
-              <div className='w-40'>
+              <div className='w-40 lg:w-52'>
                 <svg viewBox='0 0 1130 224' fill='none' xmlns='http://www.w3.org/2000/svg'>
                   <path
                     fillRule='evenodd'
@@ -112,7 +112,16 @@ function UserInterface() {
 
             <motion.div
               key='current-selection'
-              className='absolute bottom-5 left-5 text-blue-950 text-4xl bg-white p-5 rounded-lg z-10'
+              initial={{ opacity: 0, x: -20, y: 20 }}
+              animate={{
+                opacity: keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh]
+                  ? 1
+                  : 0,
+                x: 0,
+                y: 0,
+              }}
+              exit={{ opacity: 0, x: -20, y: 20 }}
+              className='absolute bottom-5 left-5 text-[#fff] text-lg lg:text-3xl bg-[#7e5ef5] px-5 py-3 rounded-lg z-10'
             >
               <h2>{keyValueLists[snapshot.currentMeshType][snapshot.currentSelectedMesh]}</h2>
             </motion.div>

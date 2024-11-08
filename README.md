@@ -1,36 +1,53 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Fabra 3D Product Customiser
 
-## Getting Started
+A prototype 3D product customisation tool that allows users to interactively select and customise modular parts of 3D clothing models.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+-   **3D Framework**: Built with Next.js 15, React Three Fiber, and Three.js.
+-   **Realistic 3D Scene**: Ambient, directional, and spotlight lighting to enhance model realism.
+-   **Modularity Selection**: Users can select parts of the model (e.g., sleeves, collar); the camera focuses dynamically on selected areas.
+-   **Persistence**: Multiple part selections are maintained throughout customisation.
+-   **Customisation**: Change colors and materials of selected parts using digital fabric textures.
+-   **Smooth Transitions**: Implemented with React Suspense and physics-based animations for seamless user experience.
+-   **Physics-Enhanced Camera**: Smooth interactions and transitions between modular parts.
+-   **Web Server**: Simple backend using Next.js API routes.
+-   **Dockerised**: Application runs in a containerized environment for consistency.
+-   **Deployment**: Managed with Docker Compose and accessible via a live URL.
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+## Technologies Used
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+-   **Frontend**: Next.js 15, React, React Three Fiber, Three.js
+-   **Containerisation**: Docker, Docker Compose
+-   **Languages**: TypeScript/JavaScript
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+## Prerequisites
 
-## Learn More
+-   **Docker** and **Docker Compose** installed on your machine.
 
-To learn more about Next.js, take a look at the following resources:
+## Local Installation & Running
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+1.  **Clone the Repository**:
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+    `git clone https://github.com/yourusername/fabra-3d-customizer.git
+    cd fabra-3d-customizer` 
+    
+3.  **Build and Run with Docker Compose**:
+	   -  `docker-compose up --build`
 
-## Deploy on Vercel
+## Accessing the Application
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+-   Access the application at **[http://localhost:3000](http://localhost:3000)**.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Live Demo
+
+-   **URL**: [https://fabra-poc-image-1063239135135.australia-southeast1.run.app/](https://fabra-poc-image-1063239135135.australia-southeast1.run.app/)
+
+## Contact
+
+-   **Author**: Zan Savic
+-   **Email**: zsavicreative@gmail.com
+
+----------
+
+**Note**: For detailed architecture and design information, please refer to the accompanying PDF document.

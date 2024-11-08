@@ -29,8 +29,6 @@ export function Polo(props) {
   const snapshot = useSnapshot(state);
   const poloGroupRef = useRef();
   const { nodes } = useGLTF(modelPath);
-  // const currentMaterials = useStore((state) => state.currentMaterials);
-  const setCurrentMaterials = useStore((state) => state.setCurrentMaterials);
 
   const [
     {
@@ -99,18 +97,16 @@ export function Polo(props) {
     });
   }
 
-  const currentFullTexture = useGetTexture(materialType);
-  const selectedMeshTexture = useGetTexture(selectedMeshMat);
+  const currentFullTexture = useGetTexture(materialType, "polo");
+  const selectedMeshTexture = useGetTexture(selectedMeshMat, "polo");
 
   useEffect(() => {
-    console.log("useEffect for changing material");
     const currentMaterial = createPBRMaterial(currentFullTexture, materialType);
 
     if (poloGroupRef.current) {
       poloGroupRef.current.children.forEach((child) => {
         if (child.name !== "Scene") {
           child.material = currentMaterial;
-          setCurrentMaterials(snapshot.currentMeshType, child.name, currentMaterial);
         }
       });
     }
@@ -123,9 +119,6 @@ export function Polo(props) {
           child.material = createPBRMaterial(selectedMeshTexture, selectedMeshMat);
         }
       });
-
-      // console.log(selectedMeshMat);
-      // setLevaState({ "Selected Part Material":  });
     }
   }, [selectedMeshMat]);
 

@@ -60,12 +60,3 @@ export const useStore = create((set) => ({
     });
   },
 }));
-
-// export function setCurrentMaterials(meshType, key, material) {
-//   console.log("meshType:", meshType);
-//   console.log("key:", key);
-//   console.log("material:", material);
-//   useStore.setState((state) => {
-//     state.currentMaterials[meshType][key] = material;
-//   });
-// }

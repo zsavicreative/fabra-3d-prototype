@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
 import {
   AccumulativeShadows,
@@ -19,6 +19,7 @@ import { keyValueLists } from "../constants";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
 import { Polo } from "./models/Polo";
+import { motion } from "framer-motion";
 
 const cameraConfig = {
   position: [0, 0, 3.8],
@@ -44,15 +45,6 @@ export default function ThreeScene() {
   return (
     <div className='w-full h-screen'>
       <Canvas shadows camera={cameraConfig} gl={{ preserveDrawingBuffer: false }}>
-        {/* <spotLight
-          position={[0, 0.5, 1.5]}
-          angle={1}
-          penumbra={0.25}
-          shadow-mapSize={1024}
-          castShadow
-          intensity={5}
-        /> */}
-
         <spotLight
           position={[0, 0.3, 1.25]}
           angle={Math.PI / 4}
@@ -70,11 +62,12 @@ export default function ThreeScene() {
           />
         </CameraRig>
 
-        {/* <Backdrop /> */}
-        <Center>
-          {apparel === "hoodie" && <Hoodie />}
-          {apparel === "polo" && <Polo />}
-        </Center>
+        <Suspense fallback={<RotatingBox />}>
+          <Center>
+            {apparel === "hoodie" && <Hoodie />}
+            {apparel === "polo" && <Polo />}
+          </Center>
+        </Suspense>
 
         <ContactShadows
           position={[0, -0.9, 0]}
@@ -157,7 +150,7 @@ function CameraRig({ children }) {
       position:
         cameraLocations[currentSelectedMesh]?.position || cameraLocations["default"].position,
       target: cameraLocations[currentSelectedMesh]?.target || cameraLocations["default"].target,
-      config: { mass: 5, friction: 100 },
+      config: { mass: 2, friction: 50 },
       immediate: true,
     }),
     [],
@@ -171,7 +164,7 @@ function CameraRig({ children }) {
         y: springs.position.get()[1],
         z: springs.position.get()[2],
       },
-      delta * 20,
+      delta * 10,
     );
 
     state.camera.lookAt(springs.target.get()[0], springs.target.get()[1], springs.target.get()[2]);
@@ -234,5 +227,16 @@ function Backdrop() {
         position={[-5, 5, -9]}
       />
     </AccumulativeShadows>
+  );
+}
+
+function RotatingBox() {
+  const mesh = useRef();
+  useFrame(() => (mesh.current.rotation.x = mesh.current.rotation.y += 0.01));
+  return (
+    <mesh ref={mesh} scale={0.5}>
+      <boxGeometry args={[1, 1, 1]} />
+      <meshStandardMaterial color='orange' />
+    </mesh>
   );
 }

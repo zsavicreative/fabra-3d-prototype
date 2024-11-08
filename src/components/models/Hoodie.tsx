@@ -63,7 +63,6 @@ export function Hoodie(props) {
 
   function handleClicked(e) {
     e.stopPropagation();
-    // console.log("clicked:", e.object.name);
     state.currentSelectedMesh = e.object.name;
 
     hoodieGroupRef.current.children.forEach((child) => {

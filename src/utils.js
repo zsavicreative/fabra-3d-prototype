@@ -1,7 +1,7 @@
 import { useTexture } from "@react-three/drei";
 import { DoubleSide, MeshPhysicalMaterial, RepeatWrapping } from "three";
 
-export function useGetTexture(materialType) {
+export function useGetTexture(materialType, modelType = "hoodie") {
   const texturePath = `/assets/textures/texture-${materialType}/textures`;
 
   const texture = useTexture({
@@ -15,7 +15,15 @@ export function useGetTexture(materialType) {
   for (const key in texture) {
     texture[key].wrapS = RepeatWrapping;
     texture[key].wrapT = RepeatWrapping;
-    texture[key].repeat.set(10, 10);
+    if (materialType !== "white") {
+      texture[key].repeat.set(10, 10);
+    } else {
+      if (modelType === "polo") {
+        texture[key].repeat.set(6, 6);
+      } else {
+        texture[key].repeat.set(4, 4);
+      }
+    }
   }
 
   return texture;
@@ -33,9 +41,7 @@ export function hideShowParts(type, nodes) {
 }
 
 export function createPBRMaterial(textures, materialType) {
-  console.log("textures:", textures);
   const material = new MeshPhysicalMaterial(textures);
-  console.log("material:", material);
   material.side = DoubleSide;
   material.displacementScale = 0.005;
   material.normalScale.set(2, 2);

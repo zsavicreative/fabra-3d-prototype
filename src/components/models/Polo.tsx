@@ -2,9 +2,9 @@ import { useGLTF } from "@react-three/drei";
 import { useControls } from "leva";
 import { MeshPhysicalMaterial } from "three";
 import { createPBRMaterial, useGetTexture } from "../../utils";
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef } from "react";
 import { useSnapshot } from "valtio";
-import { state, useStore } from "../../store";
+import { state } from "../../store";
 
 const defaultParts = ["collar"];
 

@@ -1,25 +1,13 @@
 import { Suspense, useEffect, useRef } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import {
-  AccumulativeShadows,
-  Center,
-  ContactShadows,
-  Decal,
-  Environment,
-  OrbitControls,
-  RandomizedLight,
-  useGLTF,
-  useTexture,
-} from "@react-three/drei";
-import { useSpring, animated } from "@react-spring/three";
+import { Center, ContactShadows, Environment, OrbitControls } from "@react-three/drei";
+import { useSpring } from "@react-spring/three";
 import { useControls } from "leva";
 import { useSnapshot } from "valtio";
-import { easing, dampE } from "maath";
 import { keyValueLists } from "../constants";
 import { state } from "../store";
 import { Hoodie } from "./models/Hoodie";
 import { Polo } from "./models/Polo";
-import { motion } from "framer-motion";
 
 const cameraConfig = {
   position: [0, 0, 3.8],
@@ -27,8 +15,6 @@ const cameraConfig = {
 };
 
 export default function ThreeScene() {
-  // const snapshot = useSnapshot(state);
-
   const { "Apparel Type": apparel } = useControls({
     "Apparel Type": {
       options: {
@@ -195,39 +181,6 @@ function CameraRig({ children }) {
   }, []);
 
   return <group ref={groupRef}>{children}</group>;
-}
-
-function Backdrop() {
-  const shadows = useRef();
-  useFrame((state, delta) =>
-    easing.dampC(shadows.current.getMesh().material.color, state.color, 0.25, delta),
-  );
-  return (
-    <AccumulativeShadows
-      ref={shadows}
-      temporal
-      frames={60}
-      alphaTest={0.85}
-      scale={5}
-      rotation={[Math.PI / 2, 0, 0]}
-      position={[0, 0, -0.2]}
-    >
-      <RandomizedLight
-        amount={4}
-        radius={9}
-        intensity={0.55}
-        ambient={0.25}
-        position={[5, 5, -10]}
-      />
-      <RandomizedLight
-        amount={4}
-        radius={5}
-        intensity={0.25}
-        ambient={0.55}
-        position={[-5, 5, -9]}
-      />
-    </AccumulativeShadows>
-  );
 }
 
 function RotatingBox() {

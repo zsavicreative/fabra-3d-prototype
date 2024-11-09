@@ -9,7 +9,7 @@ const defaultParts = ["hood-highpoly", "left-sleeve", "right-sleeve", "left-cuff
 
 const modelPath = "/assets/models/hoodie-full-clean-test.glb";
 
-export function Hoodie(props) {
+export function Hoodie() {
   const snapshot = useSnapshot(state);
   const hoodieGroupRef = useRef();
   const { nodes } = useGLTF(modelPath);
@@ -99,7 +99,6 @@ export function Hoodie(props) {
 
   return (
     <group
-      {...props}
       dispose={null}
       scale={0.02}
       rotation={[Math.PI / 2, 0, 0]}

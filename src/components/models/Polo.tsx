@@ -8,15 +8,6 @@ import { state } from "../../store";
 
 const defaultParts = ["collar"];
 
-export const buttonParts = [
-  // "button-one_1",
-  "button-one_2",
-  // "button-one_3",
-  // "button-two_1",
-  "button-two_2",
-  // "button-two_3",
-];
-
 const modelPath = "/assets/models/reg-polo.glb";
 
 const buttonMaterial = new MeshPhysicalMaterial({
@@ -35,7 +26,6 @@ export function Polo(props) {
       "Full Material Type": materialType,
       "Sleeve Length": sleeveType,
       "Body Length": bodyType,
-      "Button Colour": buttonColour,
       "Selected Part Material": selectedMeshMat,
     },
     set,
@@ -133,17 +123,38 @@ export function Polo(props) {
         onClick={(e) => handleClicked(e)}
       >
         <mesh
-          geometry={nodes["button-one_2"].geometry}
+          geometry={nodes["btn-one_1"].geometry}
           material={buttonMaterial}
-          color={buttonColour}
+          name='button-one_thread_1'
+        />
+        <mesh
+          geometry={nodes["btn-one_2"].geometry}
+          material={buttonMaterial}
           name='button-one_2'
+        />
+        <mesh
+          geometry={nodes["btn-one_3"].geometry}
+          material={buttonMaterial}
+          name='button-one_thread_2'
         />
 
         <mesh
-          geometry={nodes["button-two_2"].geometry}
+          geometry={nodes["btn-two_1"].geometry}
           material={buttonMaterial}
-          color={buttonColour}
+          rotation={[-Math.PI / 2, 0, 0]}
+          name='button-two_thread_1'
+        />
+        <mesh
+          geometry={nodes["btn-two_2"].geometry}
+          material={buttonMaterial}
+          rotation={[-Math.PI / 2, 0, 0]}
           name='button-two_2'
+        />
+        <mesh
+          geometry={nodes["btn-two_3"].geometry}
+          material={buttonMaterial}
+          rotation={[-Math.PI / 2, 0, 0]}
+          name='button-two_thread_2'
         />
 
         {currentMeshesArray.map((mesh, index) => (
